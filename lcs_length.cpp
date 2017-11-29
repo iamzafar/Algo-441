@@ -4,7 +4,7 @@
  */
 #include <iostream>
 #include <fstream>
- #include <string.h>
+#include <string.h>
 
 // get the largest number
 int getMax(int first, int second);
