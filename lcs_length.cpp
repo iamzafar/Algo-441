@@ -1,18 +1,39 @@
 /*
+ * 11-30-2017
  * Zafar Mamarakhimov
  * Project 2 milestone 1
+ * Implementation of the serial longest common subsequence algorithm.
+ * This is tabulated approach of LSC algorithm where each character of string 
+ * is placed in 2-D array.
  */
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <stdlib.h>
 
-// get the largest number
+// ======================================================
+// Function prototypes 
+
+char *getInput(char * input_file);
+
 int getMax(int first, int second);
-int lcs( char *X, char *Y, int m, int n );
+
+int getLCS( char *X, char *Y, int m, int n );
+
+// ======================================================
 
 int main(int argc, char const *argv[])
 {
     /* code */
+
+  if (argc < 2)
+  {
+    /* code */
+    std::cout << "Incorrect number of arguments\n";
+    exit(EXIT_FAILURE);
+  }else{
+
+
 
     char X[] = "AGGTAB";
     char Y[] = "GXTXAYB";
@@ -20,8 +41,9 @@ int main(int argc, char const *argv[])
     int m = strlen(X);
     int n = strlen(Y);
  
-    std::cout << "The length of the LCS " << lcs(X, Y, m, n) << std::endl;
+    std::cout << "The length of the LCS " << getLCS(X, Y, m, n) << std::endl;
     std::cout << "End of the program" << std::endl;
+  }
     return 0;
 }
 
@@ -36,7 +58,7 @@ int getMax(int first, int second)
 }
 
 /* Returns length of LCS for X[0..m-1], Y[0..n-1] */
-int lcs( char *X, char *Y, int m, int n )
+int getLCS( char *X, char *Y, int m, int n )
 {
    int L[m+1][n+1];
    int i, j;
