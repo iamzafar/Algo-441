@@ -46,7 +46,7 @@ int main(int argc, char const *argv[])
     char * str2 = getInput(argv[2]);
     
     
-    int lcs_length = getLCS(str1, str2, 100000, 100000);
+    int lcs_length = getLCS(str1, str2, 40000, 40000);
 
     // char X[] = "AGGTAB";
     // char Y[] = "GXTXAYB";
@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
     // int n = strlen(Y);
  
     // std::cout << "The length of the LCS " << getLCS(X, Y, m, n) << std::endl;
-    // std::cout << "Length of the lcs" << lcs_length << std::endl;
+    std::cout << "Length of the lcs" << lcs_length << std::endl;
     std::cout << "End of the program" << std::endl;
     // delete str1;
     // delete str2;
@@ -76,7 +76,14 @@ int getMax(int first, int second)
 /* Returns length of LCS for X[0..m-1], Y[0..n-1] */
 int getLCS( char *X, char *Y, int m, int n )
 {
-   int L[m+1][n+1];
+   
+   int length;
+   int **matrix = new int * [m + 1];
+   for(int i = 0; i <= m; i++){
+    matrix[i] =  new int[n+1];
+   }
+
+   // int L[m+1][n+1];
    // int i, j;
   
    /* Following steps build L[m+1][n+1] in bottom up fashion. Note 
@@ -86,18 +93,30 @@ int getLCS( char *X, char *Y, int m, int n )
      for (int j=0; j<=n; j++)
      {
        if (i == 0 || j == 0)
-         L[i][j] = 0;
+         matrix[i][j] = 0;
   
        else if (X[i-1] == Y[j-1])
-         L[i][j] = L[i-1][j-1] + 1;
+         matrix[i][j] = matrix[i-1][j-1] + 1;
   
        else
-         L[i][j] = getMax(L[i-1][j], L[i][j-1]);
+         matrix[i][j] = getMax(matrix[i-1][j], matrix[i][j-1]);
      }
    }
     
    /* L[m][n] contains length of LCS for X[0..n-1] and Y[0..m-1] */
-   return L[m][n];
+   
+
+   length = matrix[m][n];
+
+   for (int i = 0; i <= m; ++i)
+   {
+     delete [] matrix[i];
+     matrix[i] = NULL;
+   }
+
+   delete[] matrix;
+   matrix = NULL;
+   return length;
 }
 
 // Read the input file
