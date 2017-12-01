@@ -6,6 +6,12 @@
  * This is tabulated approach of LSC algorithm where each character of string 
  * is placed in 2-D array.
  */
+
+
+ /* -------------------------------------------------------------------------
+    Random string was obtained using following commnand:
+    cat /dev/urandom | tr -dc 'ACTG' | fold -w 10000 | head -n 1 | tr -d '\n'
+  ---------------------------------------------------------------------------*/
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -14,13 +20,15 @@
 // ======================================================
 // Function prototypes 
 
-char *getInput(char * input_file);
+char *getInput(const char *);
 
 int getMax(int first, int second);
 
-int getLCS( char *X, char *Y, int m, int n );
+int getLCS( char * String1, char * String2, int, int);
 
 // ======================================================
+
+
 
 int main(int argc, char const *argv[])
 {
@@ -34,15 +42,23 @@ int main(int argc, char const *argv[])
   }else{
 
 
+    char * str1 = getInput(argv[1]);
+    char * str2 = getInput(argv[2]);
+    
+    
+    int lcs_length = getLCS(str1, str2, 100000, 100000);
 
-    char X[] = "AGGTAB";
-    char Y[] = "GXTXAYB";
+    // char X[] = "AGGTAB";
+    // char Y[] = "GXTXAYB";
 
-    int m = strlen(X);
-    int n = strlen(Y);
+    // int m = strlen(X);
+    // int n = strlen(Y);
  
-    std::cout << "The length of the LCS " << getLCS(X, Y, m, n) << std::endl;
+    // std::cout << "The length of the LCS " << getLCS(X, Y, m, n) << std::endl;
+    // std::cout << "Length of the lcs" << lcs_length << std::endl;
     std::cout << "End of the program" << std::endl;
+    // delete str1;
+    // delete str2;
   }
     return 0;
 }
@@ -61,13 +77,13 @@ int getMax(int first, int second)
 int getLCS( char *X, char *Y, int m, int n )
 {
    int L[m+1][n+1];
-   int i, j;
+   // int i, j;
   
    /* Following steps build L[m+1][n+1] in bottom up fashion. Note 
       that L[i][j] contains length of LCS of X[0..i-1] and Y[0..j-1] */
-   for (i=0; i<=m; i++)
+   for (int i=0; i<=m; i++)
    {
-     for (j=0; j<=n; j++)
+     for (int j=0; j<=n; j++)
      {
        if (i == 0 || j == 0)
          L[i][j] = 0;
@@ -82,4 +98,28 @@ int getLCS( char *X, char *Y, int m, int n )
     
    /* L[m][n] contains length of LCS for X[0..n-1] and Y[0..m-1] */
    return L[m][n];
+}
+
+// Read the input file
+char *getInput(const char * input_file){
+  FILE *f = fopen(input_file, "r"); 
+
+  // get the file size
+  fseek(f, 0, SEEK_END);
+  size_t size = ftell(f);
+
+  std::cout << "**** size " << size << std::endl;
+  fseek(f, 0, SEEK_SET);
+  // rewind(f);
+
+  auto str = new char[size + 1];
+  fread(str, size, 1, f);
+
+  std::cout << f << std::endl;
+  std::cout << size << std::endl;
+
+  fclose(f);
+  str[size] = '\0'; 
+  // std::cout << str << std::endl;
+  return str;
 }
