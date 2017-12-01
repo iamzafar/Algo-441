@@ -5,6 +5,8 @@
  * Implementation of the serial longest common subsequence algorithm.
  * This is tabulated approach of LSC algorithm where each character of string 
  * is placed in 2-D array.
+ *
+ * ./lcs_length <file1> <n1> <file2> <n2> ===> how to run after compiling
  */
 
 
@@ -24,7 +26,9 @@ char *getInput(const char *);
 
 int getMax(int first, int second);
 
-int getLCS( char * String1, char * String2, int, int);
+int getLCS( char * String1, int, char * String2, int);
+
+void doLSC( const char *, int, const char *, int);
 
 // ======================================================
 
@@ -39,28 +43,30 @@ int main(int argc, char const *argv[])
     /* code */
     std::cout << "Incorrect number of arguments\n";
     exit(EXIT_FAILURE);
-  }else{
 
+  }else if(argc == 5){
 
-    char * str1 = getInput(argv[1]);
-    char * str2 = getInput(argv[2]);
+    // after getting right arguments, get the LSC
+    doLSC(argv[1], std::stoi(argv[2]), argv[3], std::stoi(argv[4]));    
     
-    
-    int lcs_length = getLCS(str1, str2, 40000, 40000);
-
-    // char X[] = "AGGTAB";
-    // char Y[] = "GXTXAYB";
-
-    // int m = strlen(X);
-    // int n = strlen(Y);
- 
-    // std::cout << "The length of the LCS " << getLCS(X, Y, m, n) << std::endl;
-    std::cout << "Length of the lcs" << lcs_length << std::endl;
     std::cout << "End of the program" << std::endl;
-    // delete str1;
-    // delete str2;
+
   }
     return 0;
+}
+
+
+// Get the input and do the LSC algorithm
+void doLSC( const char * file1, int n1, const char * file2, int n2){
+  std::cout << "inside of doLCS()\n";
+  char * str1 = getInput(file1);
+  char * str2 = getInput(file2);
+
+  int lcs_length = getLCS(str1, n1, str2, n2);
+
+  std::cout << "The length of the LCS = " << lcs_length << std::endl;
+  delete str1;
+  delete str2;
 }
 
 // Utility function that returns maximum number
@@ -74,7 +80,7 @@ int getMax(int first, int second)
 }
 
 /* Returns length of LCS for X[0..m-1], Y[0..n-1] */
-int getLCS( char *X, char *Y, int m, int n )
+int getLCS( char *X, int m, char *Y, int n )
 {
    
    int length;
@@ -127,15 +133,15 @@ char *getInput(const char * input_file){
   fseek(f, 0, SEEK_END);
   size_t size = ftell(f);
 
-  std::cout << "**** size " << size << std::endl;
+  // std::cout << "**** size " << size << std::endl;
   fseek(f, 0, SEEK_SET);
   // rewind(f);
 
-  auto str = new char[size + 1];
+  char * str = new char[size + 1];
   fread(str, size, 1, f);
 
-  std::cout << f << std::endl;
-  std::cout << size << std::endl;
+  // std::cout << f << std::endl;
+  // std::cout << size << std::endl;
 
   fclose(f);
   str[size] = '\0'; 
