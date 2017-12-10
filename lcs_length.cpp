@@ -16,9 +16,12 @@
     cat /dev/urandom | tr -dc 'ACTG' | fold -w 10000 | head -n 1 | tr -d '\n'
   ---------------------------------------------------------------------------*/
 #include <iostream>
+#include <omp.h>
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
+#include <utility>
+#include <time.h>
 
 // ======================================================
 // Function prototypes 
@@ -30,6 +33,10 @@ int getLCS( char * String1, int, char * String2, int);
 void doLSC( const char *, int, const char *, int);
 
 void cleanMatrix(int **, int);
+
+void swapString(char **, char **);
+
+void swapNum(int&, int&);
 
 // ======================================================
 
@@ -70,21 +77,85 @@ void doLSC( const char * file1, int n1, const char * file2, int n2){
 int getLCS( char * String1, int m, char * String2, int n )
 {
    
-   int length;
+   int length;   
+
+   // if (n > m){
+   //    swapNum(m, n);
+   //    swapString(&String1, &String2); // swap the string
+   // }
+
+   // creating matrix on the heap, because the size can be different and
+   // there is limit if matrix was created on the stack;   
+   int **matrix = new int * [m + 1];
+   
+   #pragma omp parallel for
+   for(int i = 0; i <= m; i++){
+    matrix[i] =  new int[n+1]; 
+   }
+
+   // row count
+   #pragma omp parallel for
+   for (int i = 0; i <= m; i++)
+   {
+      matrix[i][0] = 0;
+   }
+
+  // column count
+   #pragma omp parallel for
+   for (int j = 0; j <= n; j++)
+   {
+      matrix[0][j] = 0;
+   }
+
+
+   // for (int i = 1; i < n; ++i)
+   // {
+   //    #pragma omp parallel for
+   //    for (int j = 1; j <= i; ++j)
+   //    {
+   //      if(String2[i-j] == String1[j-1]){
+   //        matrix[i-j+1][j] = matrix[i-j][j-1] +1;
+   //      }else if (matrix[i-j][j] >= matrix[i-j+1][j-1]){
+   //        matrix[i-j+1][j] = matrix[i-j][j];
+   //      }else
+   //        matrix[i-j+1][j] = matrix[i-j+1][j-1];
+   //    }
+   // }
+
+   // int weight = 0;
+
+   // for (int k = 2; k <= m; ++k)
+   // {
+   //   if(weight < m-n){
+   //      weight +=1;
+   //   }
+   //   #pragma omp parallel for
+   //   for (int j = k; j < n+weight; ++j)
+   //   {
+   //      if(String2[n-j+k-1] == String1[j-1]){
+   //        matrix[n-j+k][j] = matrix[n-j+k-1][j-1]+1;
+   //      }else if(matrix [n-j+k-1][j] >= matrix[n-j+k][j-1]){
+   //        matrix[n-j+k][j] = matrix[n-j+k-1][j];
+   //      }else
+   //        matrix[n-j+k][j] = matrix[n-j+k][j-1];
+   //   }
+
+   // }
+   
 
    // creating matrix on the heap, because the size can be different and
    // there is limit if matrix was created on the stack;
-   int **matrix = new int * [m + 1];
-   for(int i = 0; i <= m; i++){
-    matrix[i] =  new int[n+1];
-   }
+   // int **matrix = new int * [m + 1];
+   // for(int i = 0; i <= m; i++){
+   //  matrix[i] =  new int[n+1];
+   // }
 
    /* Following steps build matrix[m+1][n+1] in bottom up fashion. Note 
       that matrix[i][j] contains length of LCS of string1[0..i-1] and string2[0..j-1] */
    for (int i=0; i<=m; i++)
    {
-     for (int j=0; j<=n; j++)
-     {
+      #pragma omp parallel for  
+      for (int j=0; j<=n; j++){
        if (i == 0 || j == 0)
          matrix[i][j] = 0;
   
@@ -100,7 +171,26 @@ int getLCS( char * String1, int m, char * String2, int n )
      }
    }
     
-   length = matrix[m][n];
+  int weight = 0;
+
+   for (int k = 2; k <= m; ++k){
+     if(weight < m-n){
+        weight +=1;
+     }
+     #pragma omp parallel for
+     for (int j = k; j < n+weight; ++j)
+     {
+        if(String2[n-j+k-1] == String1[j-1]){
+          matrix[n-j+k][j] = matrix[n-j+k-1][j-1]+1;
+        }else if(matrix [n-j+k-1][j] >= matrix[n-j+k][j-1]){
+          matrix[n-j+k][j] = matrix[n-j+k-1][j];
+        }else
+          matrix[n-j+k][j] = matrix[n-j+k][j-1];
+     }
+
+   }
+
+   length = matrix[n][m];
    cleanMatrix(matrix, m);
    return length;
 }
@@ -131,4 +221,19 @@ char *getInput(const char * input_file){
 
   fclose(f);  
   return str;
+}
+
+// Swaps pointers of two strings
+void swapString(char **str1_ptr, char **str2_ptr)
+{
+    char *temp = *str1_ptr;
+    *str1_ptr = *str2_ptr;
+    *str2_ptr = temp;
+} 
+
+// Swap two numbers
+void swapNum(int& num1, int& num2){
+  int temp = num1;
+  num1 = num2;
+  num2 = temp;
 }

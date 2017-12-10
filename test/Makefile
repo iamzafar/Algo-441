@@ -1,6 +1,6 @@
 # this is sample makefile
-CXX = g++
-CXXFLAGS = -ansi -Wall -g
+CXX = g++ -std=c++11
+CXXFLAGS = -Wall -g
 
 
 all: test.o

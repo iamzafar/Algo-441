@@ -1,7 +1,7 @@
 # Makefile for project 2 milestone 1
 # compiling it with c++ 11
-CXX = g++ -std=c++0x
-CXXFLAGS = -Wall -g
+CXX = g++ -std=c++11
+CXXFLAGS = -fopenmp -Wall -g
 
 
 all: lcs_length.o
