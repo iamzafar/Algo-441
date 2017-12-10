@@ -79,10 +79,10 @@ int getLCS( char * String1, int m, char * String2, int n )
    
    int length;   
 
-   // if (n > m){
-   //    swapNum(m, n);
-   //    swapString(&String1, &String2); // swap the string
-   // }
+   if (n > m){
+      swapNum(m, n);
+      swapString(&String1, &String2); // swap the string
+   }
 
    // creating matrix on the heap, because the size can be different and
    // there is limit if matrix was created on the stack;   
@@ -93,65 +93,11 @@ int getLCS( char * String1, int m, char * String2, int n )
     matrix[i] =  new int[n+1]; 
    }
 
-   // row count
-   #pragma omp parallel for
-   for (int i = 0; i <= m; i++)
-   {
-      matrix[i][0] = 0;
-   }
-
-  // column count
-   #pragma omp parallel for
-   for (int j = 0; j <= n; j++)
-   {
-      matrix[0][j] = 0;
-   }
-
-
-   // for (int i = 1; i < n; ++i)
-   // {
-   //    #pragma omp parallel for
-   //    for (int j = 1; j <= i; ++j)
-   //    {
-   //      if(String2[i-j] == String1[j-1]){
-   //        matrix[i-j+1][j] = matrix[i-j][j-1] +1;
-   //      }else if (matrix[i-j][j] >= matrix[i-j+1][j-1]){
-   //        matrix[i-j+1][j] = matrix[i-j][j];
-   //      }else
-   //        matrix[i-j+1][j] = matrix[i-j+1][j-1];
-   //    }
-   // }
-
-   // int weight = 0;
-
-   // for (int k = 2; k <= m; ++k)
-   // {
-   //   if(weight < m-n){
-   //      weight +=1;
-   //   }
-   //   #pragma omp parallel for
-   //   for (int j = k; j < n+weight; ++j)
-   //   {
-   //      if(String2[n-j+k-1] == String1[j-1]){
-   //        matrix[n-j+k][j] = matrix[n-j+k-1][j-1]+1;
-   //      }else if(matrix [n-j+k-1][j] >= matrix[n-j+k][j-1]){
-   //        matrix[n-j+k][j] = matrix[n-j+k-1][j];
-   //      }else
-   //        matrix[n-j+k][j] = matrix[n-j+k][j-1];
-   //   }
-
-   // }
-   
-
-   // creating matrix on the heap, because the size can be different and
-   // there is limit if matrix was created on the stack;
-   // int **matrix = new int * [m + 1];
-   // for(int i = 0; i <= m; i++){
-   //  matrix[i] =  new int[n+1];
-   // }
 
    /* Following steps build matrix[m+1][n+1] in bottom up fashion. Note 
       that matrix[i][j] contains length of LCS of string1[0..i-1] and string2[0..j-1] */
+   
+   double t0 = omp_get_wtime();
    for (int i=0; i<=m; i++)
    {
       #pragma omp parallel for  
@@ -180,7 +126,7 @@ int getLCS( char * String1, int m, char * String2, int n )
      #pragma omp parallel for
      for (int j = k; j < n+weight; ++j)
      {
-        if(String2[n-j+k-1] == String1[j-1]){
+        if(String2[j] == String1[j]){
           matrix[n-j+k][j] = matrix[n-j+k-1][j-1]+1;
         }else if(matrix [n-j+k-1][j] >= matrix[n-j+k][j-1]){
           matrix[n-j+k][j] = matrix[n-j+k-1][j];
@@ -190,8 +136,12 @@ int getLCS( char * String1, int m, char * String2, int n )
 
    }
 
-   length = matrix[n][m];
+   double t = omp_get_wtime() - t0;
+
+   length = matrix[m][n];
    cleanMatrix(matrix, m);
+
+   std::cout << "Total time is " << t << std::endl;
    return length;
 }
 
