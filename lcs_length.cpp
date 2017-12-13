@@ -19,6 +19,8 @@
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
+#include <omp.h>
+#include <time.h>
 
 // ======================================================
 // Function prototypes 
@@ -79,6 +81,7 @@ int getLCS( char * String1, int m, char * String2, int n )
     matrix[i] =  new int[n+1];
    }
 
+   double t0 = omp_get_wtime();
    /* Following steps build matrix[m+1][n+1] in bottom up fashion. Note 
       that matrix[i][j] contains length of LCS of string1[0..i-1] and string2[0..j-1] */
    for (int i=0; i<=m; i++)
@@ -101,6 +104,9 @@ int getLCS( char * String1, int m, char * String2, int n )
    }
     
    length = matrix[m][n];
+   double t = omp_get_wtime() - t0;
+   std::cout << "Total time is " << t << std::endl;
+
    cleanMatrix(matrix, m);
    return length;
 }
