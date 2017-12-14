@@ -54,7 +54,8 @@ int main(int argc, char const *argv[])
     // after getting right arguments, get the LSC
     doLSC(argv[1], std::stoi(argv[2]), argv[3], std::stoi(argv[4]));    
     
-    std::cout << "End of the program" << std::endl;
+    std::cout << "End of the program\n" << std::endl;
+
   }
     return 0;
 }
@@ -86,26 +87,40 @@ int getLCS( char * String1, int m, char * String2, int n )
 
    // creating matrix on the heap, because the size can be different and
    // there is limit if matrix was created on the stack;   
-   int **matrix = new int * [m + 1];
-   
-   #pragma omp parallel for
+   int **matrix = new int * [m+n];   
+   // #pragma omp parallel for
    for(int i = 0; i <= m; i++){
-    matrix[i] =  new int[n+1]; 
+    matrix[i] =  new int[n+m]; 
    }
 
+   #pragma omp parallel for
+   for (int a = 0; a <= m; ++a)
+   {
+     /* code */
+    matrix[a][0] = 0;
+   }
 
+   #pragma omp parallel for
+   for (int b = 0; b <= n; ++b)
+   {
+     /* code */
+    matrix[0][b] = 0;
+   }
+
+   //std::cout << "======here=======" << std::endl;
    /* Following steps build matrix[m+1][n+1] in bottom up fashion. Note 
       that matrix[i][j] contains length of LCS of string1[0..i-1] and string2[0..j-1] */
    
    double t0 = omp_get_wtime();
-   for (int i=0; i<=m; i++)
+   
+   for (int i=1; i<=m; ++i)
    {
-      #pragma omp parallel for  
-      for (int j=0; j<=n; j++){
-       if (i == 0 || j == 0)
-         matrix[i][j] = 0;
+      #pragma omp parallel for shared(matrix)
+      for (int j=1; j<=n; ++j){
+       // if (i == 0 || j == 0)
+       //   matrix[i][j] = 0;
   
-       else if (String1[i-1] == String2[j-1])
+       if (String1[i-1] == String2[j-1])
          matrix[i][j] = matrix[i-1][j-1] + 1;
   
        else {

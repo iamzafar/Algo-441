@@ -11,14 +11,26 @@
 
 export KMP_AFFINITY="verbose,compact"
 
-echo "2 threads"
+echo "2 threads 10000"
 export OMP_NUM_THREADS=2
-srun ./lcs_length test1.txt 30000 test2.txt 30000
+srun ./lcs_length test1.txt 10000 test2.txt 10000
 
-echo "4 threads"
+echo "4 threads 10000"
 export OMP_NUM_THREADS=4
-srun ./lcs_length test1.txt 30000 test2.txt 30000
+srun ./lcs_length test1.txt 10000 test2.txt 10000
 
-echo "8 threads"
+echo "8 threads 10000"
 export OMP_NUM_THREADS=8
-srun ./lcs_length test1.txt 30000 test2.txt 30000
+srun ./lcs_length test1.txt 10000 test2.txt 10000
+
+echo "2 threads 20000"
+export OMP_NUM_THREADS=2
+srun ./lcs_length test1.txt 20000 test2.txt 20000
+
+echo "4 threads 20000"
+export OMP_NUM_THREADS=4
+srun ./lcs_length test1.txt 20000 test2.txt 20000
+
+echo "8 threads 20000"
+export OMP_NUM_THREADS=8
+srun ./lcs_length test1.txt 20000 test2.txt 20000
