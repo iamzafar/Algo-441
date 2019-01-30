@@ -1,8 +1,6 @@
 # Makefile for project 2 milestone 1
 # compiling it with c++ 11
-
-CXX = g++ -std=c++11
-
+CXX = icpc -std=c++11
 CXXFLAGS = -lgomp -fopenmp -Wall -g
 
 
